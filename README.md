@@ -1,0 +1,2 @@
+Plain ScalaJS starter project
+=============================
