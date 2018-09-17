@@ -1,20 +1,34 @@
 package aws
 
+import com.definitelyscala.awssdk.DynamoDB._
+import interop.Glob
+
 import scala.scalajs.js
+import scala.scalajs.js.JSON
 import scala.scalajs.js.annotation.JSImport
 
-//@JSImport("aws-sdk", "DynamoDB")
-//@js.native
-//trait AWS extends js.Object {
-//  val document: HTMLDocument = js.native
-//  var location: String = js.native
-//
-//  def innerWidth: Int = js.native
-//  def innerHeight: Int = js.native
-//
-//  def alert(message: String): Unit = js.native
-//
-//  def open(url: String, target: String,
-//           features: String = ""): Window = js.native
-//  def close(): Unit = js.native
-//}
+
+@js.native
+@JSImport("aws-sdk", JSImport.Default)
+object AWS extends js.Object
+
+@js.native
+@js.annotation.JSGlobal("$g")
+object Window extends js.Object
+
+object Invoker{
+
+  def doSomething = {
+    //val cli = new DocumentClient
+
+    val next: js.Function2[Any, Any, Unit] = { (x: Any, y: Any) => println("I'm back") }
+
+    // js.Dynamic.literal(foo = 42, bar = "foobar")
+    val scanParam = js.Dynamic.literal().asInstanceOf[ScanParam]
+
+    // cli.scan(scanParam, next)
+    println(JSON.stringify(AWS, space=" "))
+    println(Glob.getGlobalVariables(AWS) map println)
+  }
+
+}
