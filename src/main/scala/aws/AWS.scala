@@ -19,16 +19,18 @@ object Window extends js.Object
 object Invoker{
 
   def doSomething = {
-    //val cli = new DocumentClient
+    val cli = new DocumentClient
 
-    val next: js.Function2[Any, Any, Unit] = { (x: Any, y: Any) => println("I'm back") }
+    val next: js.Function2[Any, Any, Unit] = { (x: Any, y: Any) =>
+      println("I'm back from scanning data, x:", x, y)
+    }
 
     // js.Dynamic.literal(foo = 42, bar = "foobar")
     val scanParam = js.Dynamic.literal().asInstanceOf[ScanParam]
 
-    // cli.scan(scanParam, next)
-    println(JSON.stringify(AWS, space=" "))
-    println(Glob.getGlobalVariables(AWS) map println)
+     cli.scan(scanParam, next)
+//    println(JSON.stringify(AWS, space=" "))
+    println(Glob.getGlobalVariables(cli) map println)
   }
 
 }
