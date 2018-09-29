@@ -8,4 +8,5 @@ import scala.scalajs.js.annotation.JSImport
 @JSImport("aws-sdk", "Batch")
 class Batch protected () extends js.Object {
   def this(options: js.Any = js.native) = this()
+  def describeJobDefinitions(params: DescribeJobDefinitionsParam, next: js.Function2[js.Any, js.Any, Unit]): Unit = js.native
 }

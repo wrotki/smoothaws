@@ -1,6 +1,6 @@
 package aws
 
-import com.definitelyscala.awssdk.Batch.Batch
+import com.definitelyscala.awssdk.Batch.{Batch, DescribeJobDefinitionsParam}
 import com.definitelyscala.awssdk.ClientConfig
 import com.definitelyscala.awssdk.DynamoDB._
 import interop.Glob
@@ -58,5 +58,15 @@ object Invoker {
   def doBatch: Unit = {
     val cli = new Batch
     println(JSON.stringify(cli, space = " "))
+
+    val djdnParam = js.Dynamic.literal(
+    ).asInstanceOf[DescribeJobDefinitionsParam]
+
+    val next: js.Function2[JSAny, JSAny, Unit] = { (x: JSAny, y: JSAny) =>
+      val strg = stgfy(y)
+      println(s"I'm back from describing jobdefs, err: $x, data: $strg")
+    }
+
+    cli.describeJobDefinitions(djdnParam, next)
   }
 }
