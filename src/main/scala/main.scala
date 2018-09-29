@@ -10,6 +10,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     println("Hello beautiful world!")
 
-    Invoker.doSomething
+//    Invoker.doSomething
+    Invoker.doBatch
   }
 }

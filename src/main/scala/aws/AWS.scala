@@ -1,11 +1,12 @@
 package aws
 
+import com.definitelyscala.awssdk.Batch.Batch
 import com.definitelyscala.awssdk.ClientConfig
 import com.definitelyscala.awssdk.DynamoDB._
 import interop.Glob
 
 import scala.scalajs.js
-import scala.scalajs.js.{ Any => JSAny}
+import scala.scalajs.js.{Any => JSAny}
 import scala.scalajs.js.JSON
 import scala.scalajs.js.annotation.JSImport
 
@@ -21,11 +22,12 @@ object AWS extends js.Object {
 @js.annotation.JSGlobal("$g")
 object Window extends js.Object
 
-object Invoker{
+object Invoker {
+  AWS.config.region = "us-west-2"
 
   def stgfy(v: JSAny): String = {
 
-    val ret = JSON.stringify(v, space=" ")
+    val ret = JSON.stringify(v, space = " ")
     ret
   }
 
@@ -38,7 +40,6 @@ object Invoker{
     //    ).asInstanceOf[ClientConfig]
     println(JSON.stringify(AWS, space = " "))
 
-    AWS.config.region = "us-west-2"
 
     val cli = new DocumentClient
     val next: js.Function2[JSAny, JSAny, Unit] = { (x: JSAny, y: JSAny) =>
@@ -52,6 +53,10 @@ object Invoker{
     ).asInstanceOf[ScanParam]
 
     cli.scan(scanParam, next)
-    //  }
+  }
+
+  def doBatch: Unit = {
+    val cli = new Batch
+    println(JSON.stringify(cli, space = " "))
   }
 }
