@@ -11,6 +11,7 @@ object Main {
     println("Hello beautiful world!")
 
 //    Invoker.doSomething
-    Invoker.doBatch
+//    Invoker.doBatch
+    Invoker.batchRegisterJobDef
   }
 }
