@@ -103,20 +103,21 @@ object Invoker {
         val error = stgfy(x)
         println("Result: " + strg)
         println("Error: " + x)
-        cb(Right(strg))
-      }
+        x match {
+          case null => cb(Right(strg))
+          case e => cb(Left(error))
+        }
       cli.registerJobDefinition(rjdnParam, next)
     }
   }
 
   def batchRegisterTwoJobDefs(jobName: String): IO[Unit] = {
-    val ret: IO[Unit] = for{
+    for{
       _ <- batchRegisterJobDef(jobName + "One")
       _ <- IO(System.err.println(s"One done"))
       _ <- batchRegisterJobDef(jobName + "Two")
       _ <- IO(System.err.println(s"Two done"))
     } yield ()
-    ret
   }
 
 }
