@@ -9,6 +9,9 @@ import scala.scalajs.js
 import scala.scalajs.js.{Dictionary, JSON}
 import scala.scalajs.js.annotation.JSImport
 
+import cats.effect._
+import cats.syntax.all._
+
 
 @js.native
 @JSImport("aws-sdk", JSImport.Default)
@@ -79,7 +82,7 @@ object Invoker {
     cli.describeJobDefinitions(djdnParam, next)
   }
 
-  def batchRegisterJobDef: Unit = {
+  def batchRegisterJobDef(jobName: String): IO[Unit] = {
 
     val containerProperties = js.Dynamic.literal(
       command = js.Array("foo"),
@@ -89,18 +92,31 @@ object Invoker {
     ).asInstanceOf[JobDefinitionContainerProperties]
     val rjdnParam = js.Dynamic.literal(
       `type` = "container",
-      jobDefinitionName = "ParticleBatchRegisterJobDefinitionTest",
+      jobDefinitionName = jobName, //ParticleBatchRegisterJobDefinitionTest",
       containerProperties = containerProperties
     ).asInstanceOf[RegisterJobDefinitionParam]
 
-    val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
-      val strg = stgfy(y)
-      val error = stgfy(x)
-      println("Result: "+strg)
-      println("Error: "+x)
-    }
 
-    cli.registerJobDefinition(rjdnParam, next)
+    IO.async { cb =>
+      val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
+        val strg = stgfy(y)
+        val error = stgfy(x)
+        println("Result: " + strg)
+        println("Error: " + x)
+        cb(Right(strg))
+      }
+      cli.registerJobDefinition(rjdnParam, next)
+    }
+  }
+
+  def batchRegisterTwoJobDefs(jobName: String): IO[Unit] = {
+    val ret: IO[Unit] = for{
+      _ <- batchRegisterJobDef(jobName + "One")
+      _ <- IO(System.err.println(s"One done"))
+      _ <- batchRegisterJobDef(jobName + "Two")
+      _ <- IO(System.err.println(s"Two done"))
+    } yield ()
+    ret
   }
 
 }
