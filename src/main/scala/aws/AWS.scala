@@ -8,9 +8,9 @@ import interop.Glob
 import scala.scalajs.js
 import scala.scalajs.js.{Dictionary, JSON}
 import scala.scalajs.js.annotation.JSImport
-
 import cats.effect._
 import cats.syntax.all._
+import particles.AWS.Batch.{ContainerProperties, JobDefinition}
 
 
 @js.native
@@ -20,9 +20,9 @@ object AWS extends js.Object {
 }
 
 
-@js.native
-@js.annotation.JSGlobal("$g")
-object Window extends js.Object
+//@js.native
+//@js.annotation.JSGlobal("$g")
+//object Window extends js.Object
 
 object Invoker {
   AWS.config.region = "us-west-2"
@@ -82,42 +82,22 @@ object Invoker {
     cli.describeJobDefinitions(djdnParam, next)
   }
 
-  def batchRegisterJobDef(jobName: String): IO[Unit] = {
-
-    val containerProperties = js.Dynamic.literal(
-      command = js.Array("foo"),
-      image = "Van Klomp",
-      memory = 1024,
-      vcpus = 1.0
-    ).asInstanceOf[JobDefinitionContainerProperties]
-    val rjdnParam = js.Dynamic.literal(
-      `type` = "container",
-      jobDefinitionName = jobName, //ParticleBatchRegisterJobDefinitionTest",
-      containerProperties = containerProperties
-    ).asInstanceOf[RegisterJobDefinitionParam]
-
-
-    IO.async { cb =>
-      val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
-        val strg = stgfy(y)
-        val error = stgfy(x)
-        println("Result: " + strg)
-        println("Error: " + x)
-        x match {
-          case null => cb(Right(strg))
-          case e => cb(Left(error))
-        }
-      cli.registerJobDefinition(rjdnParam, next)
+  def batchRegisterJobDef(jobName: String): IO[String] = {
+    IO.async[String]{
+      JobDefinition(jobName,
+        containerProperties = ContainerProperties(
+          image="VanKlomp",
+          command=Seq("bash", "-c", "sleep 10"))
+      ).make
     }
   }
 
   def batchRegisterTwoJobDefs(jobName: String): IO[Unit] = {
-    for{
+    for {
       _ <- batchRegisterJobDef(jobName + "One")
       _ <- IO(System.err.println(s"One done"))
       _ <- batchRegisterJobDef(jobName + "Two")
       _ <- IO(System.err.println(s"Two done"))
     } yield ()
   }
-
 }
