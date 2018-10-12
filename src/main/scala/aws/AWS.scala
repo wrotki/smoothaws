@@ -10,7 +10,7 @@ import scala.scalajs.js.{Dictionary, JSON}
 import scala.scalajs.js.annotation.JSImport
 import cats.effect._
 import cats.syntax.all._
-import particles.AWS.Batch.{ContainerProperties, JobDefinition}
+import particles.AWS.Batch.{ContainerProperties, JobDefinition, JobDefinitions}
 
 
 @js.native
@@ -42,7 +42,7 @@ object Invoker {
     //    val config = js.Dynamic.literal(
     //      region = "us-west-2"
     //    ).asInstanceOf[ClientConfig]
-    println(JSON.stringify(AWS, space = " "))
+    //println(JSON.stringify(AWS, space = " "))
 
 
     val cli = new DocumentClient
@@ -60,7 +60,7 @@ object Invoker {
   }
 
   def doBatch: Unit = {
-    println(JSON.stringify(cli, space = " "))
+    //println(JSON.stringify(cli, space = " "))
 
     val djdnParam = js.Dynamic.literal(
       //      status = "ACTIVE"
@@ -82,22 +82,31 @@ object Invoker {
     cli.describeJobDefinitions(djdnParam, next)
   }
 
-  def batchRegisterJobDef(jobName: String): IO[String] = {
-    IO.async[String]{
-      JobDefinition(jobName,
-        containerProperties = ContainerProperties(
-          image="VanKlomp",
-          command=Seq("bash", "-c", "sleep 10"))
-      ).make
+  def batchRegisterJobDef(jobName: String, currentJobDefs: Seq[JobDefinition]): IO[String] = {
+    println("inside batchRegisterTwoJobDefs")
+
+    if(currentJobDefs.exists( _.jobDefinitionName == jobName)){
+      IO("Already there")
+    } else {
+      IO.async {
+        println("inside batchRegisterTwoJobDefs async")
+        JobDefinition(jobName,
+          containerProperties = ContainerProperties(
+            image = "VanKlomp",
+            command = Seq("bash", "-c", "sleep 10"))
+        ).make
+      }
     }
   }
 
   def batchRegisterTwoJobDefs(jobName: String): IO[Unit] = {
     for {
-      _ <- batchRegisterJobDef(jobName + "One")
-      _ <- IO(System.err.println(s"One done"))
-      _ <- batchRegisterJobDef(jobName + "Two")
-      _ <- IO(System.err.println(s"Two done"))
+      jobDefList <- JobDefinitions.list
+//      _ <- IO(System.err.println(s"List done"))
+//      _ <- batchRegisterJobDef(jobName + "One", jobDefList)
+//      _ <- IO(System.err.println(s"One done"))
+//      _ <- batchRegisterJobDef(jobName + "Two", jobDefList)
+//      _ <- IO(System.err.println(s"Two done"))
     } yield ()
   }
 }

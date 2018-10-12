@@ -17,6 +17,14 @@ npmDependencies in Compile += "aws-sdk" -> "2.315.0"
 
 jsDependencies += ProvidedJS / "glob.js"
 
+val circeVersion = "0.9.3"
+
+libraryDependencies ++= Seq(
+  "io.circe" %%% "circe-core",
+  "io.circe" %%% "circe-generic",
+  "io.circe" %%% "circe-parser"
+).map(_ % circeVersion)
+
 libraryDependencies ++= Seq(
   "io.wrotki" %%% "scala-js-awssdk" % "1.0.2", 
   "com.lihaoyi" %%% "utest" % "0.4.8" % "test",

@@ -21,9 +21,34 @@ object Main extends IOApp {
       case None =>
 //        IO(System.err.println("Usage: MyApp name")).as(ExitCode(2))
 //        IO(System.err.println("DONE. No args")).as(ExitCode.Success)
+        println("invoke batchRegisterTwoJobDefs")
         Invoker.batchRegisterTwoJobDefs("ParticleBatchRegisterJobDefinitionTest").as(ExitCode.Success)
+//        IO(essay).as(ExitCode.Success)
     }
+
+  def essay: Unit = {
+    val c1 =Seq ("flour", "angel", "cheeese")
+    val c2 =Seq ("banana", "apple", "orange")
+    val c3 =Seq ("nuts", "whippedcream", "poppyseeds")
+    val combinations = for {
+      i <- c1
+      j <- c2
+      k <- c3
+    } yield (i, j, k)
+    combinations foreach println
+  }
+
+  def essay2: Unit = {
+    val c1 =Seq ("flour", "angel", "cheeese")
+    val c2 =Seq ("banana", "apple", "orange")
+    val c3 =Seq ("nuts", "whippedcream", "poppyseeds")
+    val combinations = c1.flatMap(i => c2.flatMap(j => c3.map(k => (i, j))))
+    combinations foreach println
+  }
+
 }
+
+
 
 
 //object Main {
