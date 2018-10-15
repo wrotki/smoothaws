@@ -62,7 +62,9 @@ object JobDefinitions {
   }
 
   import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-  import io.circe.generic.semiauto.deriveDecoder
+//  import io.circe.generic.semiauto.deriveDecoder
+  import io.circe.generic.auto._, io.circe.syntax._
+  import io.circe.generic.JsonCodec, io.circe.syntax._
   import cats.syntax.show._
 
   // https://stackoverflow.com/questions/37920023/could-not-find-implicit-value-for-evidence-parameter-of-type-org-apache-flink-ap
@@ -113,42 +115,45 @@ object JobDefinitions {
     // https://circe.github.io/circe/codecs/custom-codecs.html
     println(s"JSON to parse: $json")
 
-    implicit val decodeContainerProperties: Decoder[ContainerProperties] = new Decoder[ContainerProperties] {
-      final def apply(c: HCursor): Decoder.Result[ContainerProperties] =
-        for {
-          image <- c.downField("image").as[String]
-          command <- c.downField("command").as[List[String]]
-          memory <- c.downField("memory").as[Int]
-          vcpus <- c.downField("vcpus").as[Double]
-        } yield {
-          ContainerProperties(
-            image,
-            command,
-            memory,
-            vcpus
-          )
-        }
-    }
-    implicit val decodeJobDefinitionRecord: Decoder[JobDefinitionRecord] = new Decoder[JobDefinitionRecord] {
-      final def apply(c: HCursor): Decoder.Result[JobDefinitionRecord] =
-        for {
-          jobDefinitionName <- c.downField("jobDefinitionName").as[String]
-          jobDefinitionArn <- c.downField("jobDefinitionArn").as[String]
-          revision <- c.downField("revision").as[Int]
-          status <- c.downField("status").as[String]
-          _type <- c.downField("type").as[String]
-          containerProperties <- c.downField("containerProperties").as[ContainerProperties]
-        } yield {
-          JobDefinitionRecord(
-            jobDefinitionName,
-            jobDefinitionArn,
-            revision,
-            status,
-            _type,
-            containerProperties
-          )
-        }
-    }
+//    implicit val decodeContainerProperties: Decoder[ContainerProperties] = new Decoder[ContainerProperties] {
+//      final def apply(c: HCursor): Decoder.Result[ContainerProperties] =
+//        for {
+//          image <- c.downField("image").as[String]
+//          command <- c.downField("command").as[List[String]]
+//          memory <- c.downField("memory").as[Int]
+//          vcpus <- c.downField("vcpus").as[Double]
+//        } yield {
+//          ContainerProperties(
+//            image,
+//            command,
+//            memory,
+//            vcpus
+//          )
+//        }
+//    }
+    //implicit val decodeContainerProperties: Decoder[ContainerProperties] = deriveDecoder[ContainerProperties]
+//    implicit val decodeJobDefinitionRecord: Decoder[JobDefinitionRecord] = new Decoder[JobDefinitionRecord] {
+//      final def apply(c: HCursor): Decoder.Result[JobDefinitionRecord] =
+//        for {
+//          jobDefinitionName <- c.downField("jobDefinitionName").as[String]
+//          jobDefinitionArn <- c.downField("jobDefinitionArn").as[String]
+//          revision <- c.downField("revision").as[Int]
+//          status <- c.downField("status").as[String]
+//          _type <- c.downField("type").as[String]
+//          containerProperties <- c.downField("containerProperties").as[ContainerProperties]
+//        } yield {
+//          JobDefinitionRecord(
+//            jobDefinitionName,
+//            jobDefinitionArn,
+//            revision,
+//            status,
+//            _type,
+//            containerProperties
+//          )
+//        }
+//    }
+//    implicit val decodeJobDefinitionRecord: Decoder[JobDefinitionRecord] = deriveDecoder[JobDefinitionRecord]
+
     val result = parse(json).flatMap(_.as[JobDefinitionsList]) //.leftMap(_.show)
     result match {
       case r: Right[_, _] => println(s"Success: $r")
