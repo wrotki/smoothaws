@@ -10,19 +10,33 @@ import scala.collection.mutable
 import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.scalajs.js.{Dictionary, JSON}
 
+sealed trait BatchProps
+
+case class JobDefinitionsList(
+                               jobDefinitions: List[JobDefinition]
+                             ) extends BatchProps
+
+case class Volume(
+                   name: String /*,
+                   host: Host
+                   */
+                 ) extends BatchProps
 
 case class ContainerProperties(
                                 image: String,
-                                command: Seq[String],
-                                memory: Long = 1024,
-                                vcpus: Double = 1.0
-                              )
+                                command: List[String],
+                                memory: Int,
+                                vcpus: Double
+                              ) extends BatchProps
 
 case class JobDefinition(
                           jobDefinitionName: String,
-                          containerProperties: ContainerProperties,
-                          `type`: String = "container"
-                        ) {
+                          jobDefinitionArn: String,
+                          revision: Int,
+                          status: String,
+                          `type`: String,
+                          containerProperties: ContainerProperties
+                        ) extends BatchProps {
   def cliParams: RegisterJobDefinitionParam = {
     val containerProperties = js.Dynamic.literal(
       command = this.containerProperties.command.toJSArray,
@@ -74,44 +88,21 @@ object JobDefinitions {
   // https://medium.com/@djoepramono/how-to-parse-json-in-scala-c024cb44f66b
 
 
-  sealed trait BatchProps
 
-  case class Volume(
-                     name: String /*,
-                   host: Host
-                   */
-                   ) extends BatchProps
+  private def parseJSON(json: String): List[JobDefinition] = {
+//    println(s"JSON to parse: $json")
 
-  case class ContainerProperties(
-                                  image: String,
-                                  command: List[String],
-                                  memory: Int,
-                                  vcpus: Double
-                                ) extends BatchProps
-
-  case class JobDefinitionRecord(
-                                  jobDefinitionName: String,
-                                  jobDefinitionArn: String,
-                                  revision: Int,
-                                  status: String,
-                                  `type`: String,
-                                  containerProperties: ContainerProperties
-                                ) extends BatchProps
-
-  case class JobDefinitionsList(
-                                 jobDefinitions: List[JobDefinitionRecord]
-                               ) extends BatchProps
-
-  def parseJSON(json: String): Unit = {
-    println(s"JSON to parse: $json")
-
-    val result = parse(json).flatMap(_.as[JobDefinitionsList]) //.leftMap(_.show)
+    val result = parse(json).flatMap(_.as[JobDefinitionsList])//.leftMap(_.show)
     result match {
       case r: Right[_, _] => {
         val head = r.right.get.jobDefinitions.head
-        println(s"Success: $head")
+//        println(s"Success: $head")
+        r.right.get.jobDefinitions
       }
-      case r: Left[lt, rt] => println(s"Error: $r")
+      case r: Left[lt, rt] => {
+        println(s"Error: $r")
+        List[JobDefinition]()
+      }
     }
   }
 
@@ -138,18 +129,18 @@ object JobDefinitions {
           case null =>
             //            val first: (String, js.Any) = dataDict.head
             //            printf("First: %s\n", first._2)
-            parseJSON(strg)
-            cb(Right(Seq( // TODO do proper JSON deserialization
-
-              //              JobDefinition("" /*strg*/ ,
-              //                containerProperties = ContainerProperties(
-              //                  image = "VanKlomp",
-              //                  command = Seq("bash", "-c", "sleep 10"),
-              //                  memory=1024,
-              //                  vcpus=1.0
-              //                )
-              //              )
-            ))) //TODO: deserialize
+            cb(Right(parseJSON(strg)))
+//            cb(Right(Seq( // TODO do proper JSON deserialization
+//
+//              //              JobDefinition("" /*strg*/ ,
+//              //                containerProperties = ContainerProperties(
+//              //                  image = "VanKlomp",
+//              //                  command = Seq("bash", "-c", "sleep 10"),
+//              //                  memory=1024,
+//              //                  vcpus=1.0
+//              //                )
+//              //              )
+//            ))) //TODO: deserialize
           case e => cb(Left(new Throwable(e.toString)))
         }
       }
