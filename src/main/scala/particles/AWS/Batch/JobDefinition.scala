@@ -88,15 +88,14 @@ object JobDefinitions {
   // https://medium.com/@djoepramono/how-to-parse-json-in-scala-c024cb44f66b
 
 
-
   private def parseJSON(json: String): List[JobDefinition] = {
-//    println(s"JSON to parse: $json")
+    //    println(s"JSON to parse: $json")
 
-    val result = parse(json).flatMap(_.as[JobDefinitionsList])//.leftMap(_.show)
+    val result = parse(json).flatMap(_.as[JobDefinitionsList]) //.leftMap(_.show)
     result match {
       case r: Right[_, _] => {
         val head = r.right.get.jobDefinitions.head
-//        println(s"Success: $head")
+        //        println(s"Success: $head")
         r.right.get.jobDefinitions
       }
       case r: Left[lt, rt] => {
@@ -111,7 +110,7 @@ object JobDefinitions {
       //      println(JSON.stringify(cli, space = " "))
 
       val djdnParam = js.Dynamic.literal(
-        //      status = "ACTIVE"
+        status = "ACTIVE"
       ).asInstanceOf[DescribeJobDefinitionsParam]
 
       val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
@@ -130,17 +129,17 @@ object JobDefinitions {
             //            val first: (String, js.Any) = dataDict.head
             //            printf("First: %s\n", first._2)
             cb(Right(parseJSON(strg)))
-//            cb(Right(Seq( // TODO do proper JSON deserialization
-//
-//              //              JobDefinition("" /*strg*/ ,
-//              //                containerProperties = ContainerProperties(
-//              //                  image = "VanKlomp",
-//              //                  command = Seq("bash", "-c", "sleep 10"),
-//              //                  memory=1024,
-//              //                  vcpus=1.0
-//              //                )
-//              //              )
-//            ))) //TODO: deserialize
+          //            cb(Right(Seq( // TODO do proper JSON deserialization
+          //
+          //              //              JobDefinition("" /*strg*/ ,
+          //              //                containerProperties = ContainerProperties(
+          //              //                  image = "VanKlomp",
+          //              //                  command = Seq("bash", "-c", "sleep 10"),
+          //              //                  memory=1024,
+          //              //                  vcpus=1.0
+          //              //                )
+          //              //              )
+          //            ))) //TODO: deserialize
           case e => cb(Left(new Throwable(e.toString)))
         }
       }
