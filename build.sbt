@@ -11,7 +11,9 @@ enablePlugins(ScalaJSBundlerPlugin)
 
 scalaJSUseMainModuleInitializer := true
 
-scalacOptions += "-Ypartial-unification"
+scalacOptions ++= Seq("-Ypartial-unification"
+//  , "-Xprint:typer"
+)
 
 npmDependencies in Compile += "aws-sdk" -> "2.315.0"
 

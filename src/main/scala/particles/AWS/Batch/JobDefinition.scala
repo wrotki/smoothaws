@@ -51,7 +51,7 @@ case class JobDefinition(
     ).asInstanceOf[RegisterJobDefinitionParam]
   }
 
-  def make: (Either[Throwable, String] => Unit) => Unit = {
+  def register: (Either[Throwable, String] => Unit) => Unit = {
     cb => {
       val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
         val strg = stgfy(y)
@@ -107,39 +107,15 @@ object JobDefinitions {
 
   private def describeJobDefinitions: (Either[Throwable, Seq[JobDefinition]] => Unit) => Unit = {
     cb => {
-      //      println(JSON.stringify(cli, space = " "))
-
       val djdnParam = js.Dynamic.literal(
         status = "ACTIVE"
       ).asInstanceOf[DescribeJobDefinitionsParam]
 
       val next: js.Function2[js.Any, js.Any, Unit] = { (x: js.Any, y: js.Any) =>
         val strg = stgfy(y)
-        //      println(s"I'm back from describing jobdefs, err: $x, data: $strg")
-        //        val dataDict: Dictionary[js.Any] = y.asInstanceOf[js.Dictionary[js.Any]]
-        //        val gv: PartialFunction[(String, js.Any), js.Any] = {
-        //          case (k: String, v: js.Any) => v
-        //        }
-        //        val res: mutable.Iterable[String] = dataDict map {
-        //          gv andThen stgfy
-        //        }
-        //println(res)
         x match {
           case null =>
-            //            val first: (String, js.Any) = dataDict.head
-            //            printf("First: %s\n", first._2)
             cb(Right(parseJSON(strg)))
-          //            cb(Right(Seq( // TODO do proper JSON deserialization
-          //
-          //              //              JobDefinition("" /*strg*/ ,
-          //              //                containerProperties = ContainerProperties(
-          //              //                  image = "VanKlomp",
-          //              //                  command = Seq("bash", "-c", "sleep 10"),
-          //              //                  memory=1024,
-          //              //                  vcpus=1.0
-          //              //                )
-          //              //              )
-          //            ))) //TODO: deserialize
           case e => cb(Left(new Throwable(e.toString)))
         }
       }

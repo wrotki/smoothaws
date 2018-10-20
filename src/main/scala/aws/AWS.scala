@@ -29,13 +29,23 @@ object Invoker {
 
   val cli = new Batch
 
+  def batchRegisterJobDefIfMissing(jobName: String): IO[Unit] = {
+    println("inside batchRegisterJobDefIfMissing")
+    for {
+      jobDefList <- JobDefinitions.list
+      _ <- IO(System.err.println(s"List done"))
+      brjd <- batchRegisterJobDef(jobName, jobDefList)
+      last <- IO(System.err.println(s"batchRegisterJobDef: $brjd"))
+    } yield last
+  }
+
   def stgfy(v: js.Any): String = {
 
     val ret = JSON.stringify(v, space = " ")
     ret
   }
 
-  def doSomething: Unit = {
+  private def doSomething: Unit = {
 
     // println(Glob.getGlobalVariables(AWS) map println)
 
@@ -59,7 +69,7 @@ object Invoker {
     cli.scan(scanParam, next)
   }
 
-  def doBatch: Unit = {
+  private def doBatch: Unit = {
     //println(JSON.stringify(cli, space = " "))
 
     val djdnParam = js.Dynamic.literal(
@@ -82,7 +92,7 @@ object Invoker {
     cli.describeJobDefinitions(djdnParam, next)
   }
 
-  def batchRegisterJobDef(jobName: String, currentJobDefs: Seq[JobDefinition]): IO[String] = {
+  private def batchRegisterJobDef(jobName: String, currentJobDefs: Seq[JobDefinition]): IO[String] = {
     println(s"inside batchRegisterJobDef, jobName: $jobName")
     println(s"JobDefs: $jobName")
     currentJobDefs filter {
@@ -107,29 +117,8 @@ object Invoker {
             1024,
             1.0
           )
-        ).make
+        ).register
       }
     }
-  }
-
-  def batchRegisterJobDefIfMissing(jobName: String): IO[Unit] = {
-    println("inside batchRegisterJobDefIfMissing")
-    for {
-      jobDefList <- JobDefinitions.list
-      _ <- IO(System.err.println(s"List done"))
-      brjd <- batchRegisterJobDef(jobName, jobDefList)
-      last <- IO(System.err.println(s"batchRegisterJobDef: $brjd"))
-    } yield last
-  }
-
-  def batchRegisterTwoJobDefs(jobName: String): IO[Unit] = {
-    for {
-      jobDefList <- JobDefinitions.list
-      //      _ <- IO(System.err.println(s"List done"))
-      //      _ <- batchRegisterJobDef(jobName + "One", jobDefList)
-      //      _ <- IO(System.err.println(s"One done"))
-      //      _ <- batchRegisterJobDef(jobName + "Two", jobDefList)
-      //      _ <- IO(System.err.println(s"Two done"))
-    } yield ()
   }
 }
