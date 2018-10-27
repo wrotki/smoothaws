@@ -30,9 +30,19 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "io.wrotki" %%% "scala-js-awssdk" % "1.0.2", 
-  "com.lihaoyi" %%% "utest" % "0.4.8" % "test",
+  "com.lihaoyi" %%% "utest" % "0.6.5" % "test",
    "org.typelevel" %%% "cats-core" % "1.4.0",
-  "org.typelevel" %%% "cats-effect" % "1.0.0"
+  "org.typelevel" %%% "cats-effect" % "1.0.0",
+  // https://mvnrepository.com/artifact/com.propensive?p=2
+  "com.propensive" %%% "rapture-io" % "2.0.0-M9",
+  "com.propensive" %%% "rapture-net" % "2.0.0-M9",
+  "com.propensive" %%% "rapture-uri" % "2.0.0-M9",
+  "com.propensive" %%% "rapture-xml-stdlib" % "2.0.0-M9",
+  "com.propensive" %%% "rapture-http" % "2.0.0-M9",
+  // https://www.reddit.com/r/scala/comments/8spei9/recommended_scalajs_http_clients/
+  // https://github.com/softwaremill/sttp
+//  "com.softwaremill.sttp" %%% "core_2.12" % "1.3.9",
+  "fr.hmil" %%% "roshttp" % "2.1.0"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")

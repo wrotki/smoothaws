@@ -19,7 +19,6 @@ object AWS extends js.Object {
   var config: ClientConfig = js.native
 }
 
-
 //@js.native
 //@js.annotation.JSGlobal("$g")
 //object Window extends js.Object

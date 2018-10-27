@@ -3,6 +3,8 @@ package particles.AWS
 import cats.effect.IO
 
 package object Batch {
+
+
   def registerJobDefIfMissing(jobName: String): IO[Unit] = {
     println("inside batchRegisterJobDefIfMissing")
     for {

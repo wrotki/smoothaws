@@ -1,5 +1,7 @@
 package test.utest.examples.examples
 
+import java.io.File
+
 import cats.effect._
 import cats.syntax.all._
 import utest._
