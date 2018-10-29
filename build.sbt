@@ -42,7 +42,9 @@ libraryDependencies ++= Seq(
   // https://www.reddit.com/r/scala/comments/8spei9/recommended_scalajs_http_clients/
   // https://github.com/softwaremill/sttp
 //  "com.softwaremill.sttp" %%% "core_2.12" % "1.3.9",
-  "fr.hmil" %%% "roshttp" % "2.1.0"
+  "fr.hmil" %%% "roshttp" % "2.1.0",
+  // https://github.com/scalajs-io/nodejs
+  "io.scalajs" %%% "nodejs" % "0.4.2"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")
