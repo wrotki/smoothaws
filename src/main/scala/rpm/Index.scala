@@ -127,16 +127,17 @@ object Index {
       val f: scalajs.js.Function1[Buffer, Ack] = (b: Buffer) =>
         subscriber.onNext(b).syncOnStopOrFailure(_ => c.cancel())
       // target.addEventListener(event, f)
-      fetch(f)
+      val complete = () => subscriber.onComplete()
+      fetch(f, complete)
       c := Cancelable(() => ())
     }
   }
 
-  def fetch(f: scalajs.js.Function1[Buffer, Ack]): Unit = {
+  def fetch(f: scalajs.js.Function1[Buffer, Ack], complete: scalajs.js.Function): Unit = {
     // https://github.com/hmil/RosHTTP
     // Runs consistently on the jvm, in node.js and in the browser!
     val request = HttpRequest("https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/23/Everything/x86_64/os/repodata/0fa09bb5f82e4a04890b91255f4b34360e38ede964fe8328f7377e36f06bad27-primary.xml.gz")
-      .withBackendConfig(BackendConfig(maxChunkSize = 1024, internalBufferLength = 1024 * 1024))
+      .withBackendConfig(BackendConfig(maxChunkSize = 1024, internalBufferLength = 128 * 1024 * 1024))
 
     def onData: js.Function = {
       (x: js.Any, y: js.Any) =>
@@ -146,17 +147,14 @@ object Index {
 
     val gunzip = Zlib.createGunzip()
     gunzip.on(eventName = "data", listener = onData)
+    gunzip.on(eventName = "end", listener = complete)
 
     val streamFuture: Future[Unit] = request.stream().map({ r: StreamHttpResponse =>
-//      val bufFut: CancelableFuture[Unit] = r.body.foreach { buffer: ByteBuffer =>
-//        val chunk = nioToNodeBuffer(buffer)
-//        gunzip.write(chunk)
-//        gunzip.end()
-//      }
       val bufFut: CancelableFuture[Unit] = r.body
-        .doOnComplete( () =>
+        .doOnComplete { () =>
+          println("End of input stream encountered")
           gunzip.end()
-        )
+        }
         .foreach { buffer: ByteBuffer =>
         val chunk = nioToNodeBuffer(buffer)
         gunzip.write(chunk)
