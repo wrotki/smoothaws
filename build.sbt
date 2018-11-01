@@ -34,17 +34,20 @@ libraryDependencies ++= Seq(
    "org.typelevel" %%% "cats-core" % "1.4.0",
   "org.typelevel" %%% "cats-effect" % "1.0.0",
   // https://mvnrepository.com/artifact/com.propensive?p=2
-  "com.propensive" %%% "rapture-io" % "2.0.0-M9",
-  "com.propensive" %%% "rapture-net" % "2.0.0-M9",
-  "com.propensive" %%% "rapture-uri" % "2.0.0-M9",
-  "com.propensive" %%% "rapture-xml-stdlib" % "2.0.0-M9",
-  "com.propensive" %%% "rapture-http" % "2.0.0-M9",
+//  "com.propensive" %%% "rapture-io" % "2.0.0-M9",
+//  "com.propensive" %%% "rapture-net" % "2.0.0-M9",
+//  "com.propensive" %%% "rapture-uri" % "2.0.0-M9",
+//  "com.propensive" %%% "rapture-xml" % "2.0.0-M9",
+//  "com.propensive" %%% "rapture-http" % "2.0.0-M9",
   // https://www.reddit.com/r/scala/comments/8spei9/recommended_scalajs_http_clients/
   // https://github.com/softwaremill/sttp
 //  "com.softwaremill.sttp" %%% "core_2.12" % "1.3.9",
   "fr.hmil" %%% "roshttp" % "2.1.0",
+  "io.monix" %%% "monix" % "2.3.0",
   // https://github.com/scalajs-io/nodejs
-  "io.scalajs" %%% "nodejs" % "0.4.2"
+  "io.scalajs" %%% "nodejs" % "0.4.2",
+  // https://github.com/scalajs-io/xml2js
+  "io.scalajs.npm" %%% "xml2js" % "0.4.2"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")

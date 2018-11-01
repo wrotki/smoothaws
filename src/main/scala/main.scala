@@ -7,6 +7,7 @@ import aws.Invoker.stgfy
 
 import scala.scalajs.js.annotation._
 import cats.effect._
+import IO._
 import cats.syntax.all._
 import fr.hmil.roshttp.BackendConfig
 import fr.hmil.roshttp.node.buffer.Buffer
@@ -30,16 +31,19 @@ object Main extends IOApp {
       case Some(name) =>
         IO(println(s"Hello, $name.")).as(ExitCode.Success)
       case None =>
-//        IO(System.err.println("Usage: MyApp name")).as(ExitCode(2))
-//        IO(System.err.println("DONE. No args")).as(ExitCode.Success)
+        //        IO(System.err.println("Usage: MyApp name")).as(ExitCode(2))
         println("invoke batchRegisterJobDefIfMissing")
         val result = for {
-//          _ <- IO(Index.fetch)
-          _ <- IO(Index.fetchObservable)
-          last <- Batch.registerJobDefIfMissing("ParticleBatchRegisterJobDefinitionTest").as(ExitCode.Success)
+          //          _ <- IO(Index.fetch)
+          //          _ <- IO(Index.fetchObservable)
+          //          last <- IO(Index.testObservableFold).as(ExitCode.Success)
+          xml <- Index.fetchObservable
+          _ <- IO( println(s"Xml head: ${xml.take(100)}") )
+          //          last <- Batch.registerJobDefIfMissing("ParticleBatchRegisterJobDefinitionTest").as(ExitCode.Success)
+          last <- IO(System.err.println("DONE. No args")).as(ExitCode.Success)
         } yield last
         result
-//        IO(essay).as(ExitCode.Success)
+      //        IO(essay).as(ExitCode.Success)
     }
 
 }
